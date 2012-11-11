@@ -36,6 +36,26 @@ class PostTest < Test::Unit::TestCase
       'file'=>File.new(__FILE__,"rb")
     ) { |response|
       assert_equal(response.code, 200)
+  end
+  
+  def test_redirect
+    res=RestClient.post( @url,
+      'key'=>'uploads/12345/${filename}',
+      'success_action_redirect'=>'http://somewhere.else.com/',
+      'file'=>File.new(__FILE__,"rb")
+      ){ |response| 
+        assert_equal(response.code, 307)
+        assert_equal(response.headers[:location], 'http://somewhere.else.com/') 
+    }
+  end
+  
+  def test_status_200
+    res=RestClient.post( @url,
+      'key'=>'uploads/12345/${filename}',
+      'success_action_status'=>'200',
+      'file'=>File.new(__FILE__,"rb")
+      ){ |response| 
+        assert_equal(response.code, 200)
     }
   end
 

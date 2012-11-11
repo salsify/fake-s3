@@ -189,7 +189,6 @@ module FakeS3
 
         content  = File.join(filename,SHUCK_METADATA_DIR,"content")
         metadata = File.join(filename,SHUCK_METADATA_DIR,"metadata")
-
         File.open(content,'wb') { |f| f << filedata }
 
         metadata_struct = create_metadata(content,request)
