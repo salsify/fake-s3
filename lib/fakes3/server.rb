@@ -60,6 +60,14 @@ module FakeS3
       req.continue if req.header['expect'].first=='100-continue'
     end
 
+    def apply_cors_headers(request, response)
+      response['Access-Control-Allow-Origin']= request['Origin']
+      response['Access-Control-Allow-Headers'] = 'accept, origin, x-csrf-token, content-type'
+      response['Access-Control-Allow-Methods'] = 'PUT, POST'
+      response['Access-Control-Allow-Credentials'] = 'true'
+      response['Access-Control-Expose-Headers'] = 'ETag'
+    end
+
     def do_GET(request, response)
       s_req = normalize_request(request)
 
@@ -298,6 +306,7 @@ module FakeS3
       response['Access-Control-Allow-Origin']   = '*'
       response['Access-Control-Allow-Headers']  = 'Authorization, Content-Length'
       response['Access-Control-Expose-Headers'] = 'ETag'
+      apply_cors_headers(request, response)
     end
 
     def do_DELETE(request, response)
@@ -318,10 +327,7 @@ module FakeS3
     def do_OPTIONS(request, response)
       super
 
-      response['Access-Control-Allow-Origin']   = '*'
-      response['Access-Control-Allow-Methods']  = 'PUT, POST, HEAD, GET, OPTIONS'
-      response['Access-Control-Allow-Headers']  = 'Accept, Content-Type, Authorization, Content-Length, ETag'
-      response['Access-Control-Expose-Headers'] = 'ETag'
+      apply_cors_headers(request, response)
     end
 
     private

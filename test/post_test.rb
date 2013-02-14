@@ -4,15 +4,15 @@ require 'rest-client'
 class PostTest < Test::Unit::TestCase
   # Make sure you have a posttest.localhost in your /etc/hosts/
   def setup
-    @url='http://posttest.localhost:10453/'
+    @url='http://salsify-development.localhost:10453/'
   end
 
   def teardown
   end
 
   def test_options
-    res= RestClient.options(@url) { |response|
-      assert_equal(response.headers[:access_control_allow_origin],"*")
+    res=RestClient.options( @url, 'Origin' => 'http://localhost:3535' ) { |response|
+      assert_equal(response.headers[:access_control_allow_origin],"http://localhost:3535")
     }
   end
 
@@ -48,14 +48,19 @@ class PostTest < Test::Unit::TestCase
         assert_equal(response.headers[:location], 'http://somewhere.else.com/') 
     }
   end
-  
+
   def test_status_200
-    res=RestClient.post( @url,
-      'key'=>'uploads/12345/${filename}',
-      'success_action_status'=>'200',
-      'file'=>File.new(__FILE__,"rb")
+    res=RestClient.post(
+      @url,
+      {
+        'key'=>'uploads/12345/${filename}',
+        'success_action_status'=>'200',
+        'file'=>File.new(__FILE__,"rb")
+      }, {'Origin' => 'http://localhost:3535'}
       ){ |response| 
         assert_equal(response.code, 200)
+        puts response.headers
+        assert_equal(response.headers[:access_control_allow_origin],"http://localhost:3535")
     }
   end
 
