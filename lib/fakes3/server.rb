@@ -46,6 +46,13 @@ module FakeS3
       @root_hostnames = [hostname,'localhost','s3.amazonaws.com','s3.localhost']
     end
 
+    def apply_cors_headers(request, response)
+      response['Access-Control-Allow-Origin']= request['Origin']
+      response['Access-Control-Allow-Headers'] = 'accept, origin, x-csrf-token, content-type'
+      response['Access-Control-Allow-Methods'] = 'PUT, POST'
+      response['Access-Control-Allow-Credentials'] = 'true'
+    end
+
     def do_GET(request, response)
       s_req = normalize_request(request)
 
@@ -164,7 +171,7 @@ module FakeS3
       filename = 'default'
       filename = $1 if request.body =~ /filename="(.*)"/
       key=key.gsub('${filename}', filename)
-      
+
       bucket_obj = @store.get_bucket(s_req.bucket) || @store.create_bucket(s_req.bucket)
       real_obj=@store.store_object(bucket_obj, key, s_req.webrick_request)
       
@@ -188,7 +195,7 @@ module FakeS3
         end
       end
       response['Content-Type'] = 'text/xml'
-      response['Access-Control-Allow-Origin']='*'
+      apply_cors_headers(request, response)
     end
 
     def do_DELETE(request,response)
@@ -208,8 +215,8 @@ module FakeS3
     
     def do_OPTIONS(request, response)
       super
-      response["Access-Control-Allow-Origin"]="*"
-    end  
+      apply_cors_headers(request, response)
+    end
 
     private
 
