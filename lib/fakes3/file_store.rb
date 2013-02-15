@@ -5,6 +5,7 @@ require 'fakes3/bucket'
 require 'fakes3/rate_limitable_file'
 require 'digest/md5'
 require 'yaml'
+require 'webrick/httpstatus'
 
 module FakeS3
   class FileStore
@@ -157,7 +158,7 @@ module FakeS3
         if boundary
           boundary = WEBrick::HTTPUtils::dequote(boundary)
           filedata = WEBrick::HTTPUtils::parse_form_data(request.body, boundary)
-          raise HTTPStatus::BadRequest if filedata['file'].empty?
+          raise WEBrick::HTTPStatus::BadRequest unless filedata['file']
           File.open(content, 'wb') do |f|
             f<<filedata['file']
             md5<<filedata['file']
