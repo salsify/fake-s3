@@ -34,7 +34,7 @@ module FakeS3
   end
 
   class NoSuchBucket < FakeS3Exception
-    message "The bucket you tried to delete is not empty."
+    message "The bucket you tried to delete does not exist."
     http_status "404"
   end
 

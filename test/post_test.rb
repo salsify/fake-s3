@@ -3,7 +3,7 @@ require 'rest-client'
 
 class PostTest < Test::Unit::TestCase
   def setup
-    @url='http://salsify-development.localhost:10453/'
+    @url='http://post-test.localhost:10453/'
   end
 
   def teardown

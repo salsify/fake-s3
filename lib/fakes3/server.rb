@@ -235,8 +235,6 @@ module FakeS3
         end
 
         if elems.size == 0
-          raise UnsupportedOperation
-        elsif elems.size == 1
           s_req.type = Request::DELETE_BUCKET
           s_req.query = query
         else
