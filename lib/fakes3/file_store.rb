@@ -80,6 +80,7 @@ module FakeS3
         real_obj.name = object_name
         real_obj.md5 = metadata[:md5]
         real_obj.content_type = metadata.fetch(:content_type) { "application/octet-stream" }
+        real_obj.content_disposition = metadata[:content_disposition]
         #real_obj.io = File.open(File.join(obj_root,"content"),'rb')
         real_obj.io = RateLimitableFile.open(File.join(obj_root,"content"),'rb')
         real_obj.size = metadata.fetch(:size) { 0 }
@@ -130,6 +131,7 @@ module FakeS3
       obj.name = dst_name
       obj.md5 = src_metadata[:md5]
       obj.content_type = src_metadata[:content_type]
+      obj.content_disposition = src_metadata[:content_disposition]
       obj.size = src_metadata[:size]
       obj.modified_date = src_metadata[:modified_date]
 
@@ -174,6 +176,7 @@ module FakeS3
         metadata_struct = {}
         metadata_struct[:md5] = md5.hexdigest
         metadata_struct[:content_type] = request.header["content-type"].first
+        metadata_struct[:content_disposition] = request.header['content-disposition'].first if request.header['content-disposition']
         metadata_struct[:size] = File.size(content)
         metadata_struct[:modified_date] = File.mtime(content).iso8601()
 
@@ -185,6 +188,7 @@ module FakeS3
         obj.name = object_name
         obj.md5 = metadata_struct[:md5]
         obj.content_type = metadata_struct[:content_type]
+        obj.content_disposition = metadata_struct[:content_disposition]
         obj.size = metadata_struct[:size]
         obj.modified_date = metadata_struct[:modified_date]
 

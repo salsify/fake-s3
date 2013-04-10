@@ -94,6 +94,7 @@ module FakeS3
 
         response.status = 200
         response['Content-Type'] = real_obj.content_type
+        response['Content-Disposition'] = real_obj.content_disposition if real_obj.content_disposition
         stat = File::Stat.new(real_obj.io.path)
 
         response['Last-Modified'] = stat.mtime.iso8601()
