@@ -325,8 +325,6 @@ module FakeS3
       path = webrick_req.path
       path_len = path.size
 
-      puts "#{webrick_req.path} : #{webrick_req.query['key']}"
-
       s_req.path = webrick_req.query['key']
 
       if path == "/"
