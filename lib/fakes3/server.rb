@@ -47,7 +47,7 @@ module FakeS3
     end
 
     def apply_cors_headers(request, response)
-      response['Access-Control-Allow-Origin'] = '*' if request['Origin']
+      response['Access-Control-Allow-Origin'] = request['Origin']
       response['Access-Control-Allow-Headers'] = 'accept, origin, x-csrf-token, content-type'
       response['Access-Control-Allow-Methods'] = 'PUT, POST'
       response['Access-Control-Allow-Credentials'] = 'true'
@@ -324,8 +324,38 @@ module FakeS3
     def normalize_post(webrick_req,s_req)
       path = webrick_req.path
       path_len = path.size
-      
+
+      puts "#{webrick_req.path} : #{webrick_req.query['key']}"
+
       s_req.path = webrick_req.query['key']
+
+      if path == "/"
+        if s_req.bucket
+          s_req.type = Request::CREATE_BUCKET
+        end
+      else
+        if s_req.is_path_style
+          elems = path[1,path_len].split("/")
+          s_req.bucket = elems[0]
+          if elems.size == 1
+            s_req.type = Request::CREATE_BUCKET
+          else
+            if webrick_req.request_line =~ /\?acl/
+              s_req.type = Request::SET_ACL
+            else
+              s_req.type = Request::STORE
+            end
+            s_req.object = elems[1,elems.size].join('/')
+          end
+        else
+          if webrick_req.request_line =~ /\?acl/
+            s_req.type = Request::SET_ACL
+          else
+            s_req.type = Request::STORE
+          end
+          s_req.object = webrick_req.path
+        end
+      end
 
       s_req.webrick_request = webrick_req
     end
