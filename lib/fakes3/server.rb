@@ -61,7 +61,7 @@ module FakeS3
     end
 
     def apply_cors_headers(request, response)
-      response['Access-Control-Allow-Origin']= request['Origin']
+      response['Access-Control-Allow-Origin'] = '*' if request['Origin']
       response['Access-Control-Allow-Headers'] = 'accept, origin, x-csrf-token, content-type'
       response['Access-Control-Allow-Methods'] = 'PUT, POST'
       response['Access-Control-Allow-Credentials'] = 'true'
