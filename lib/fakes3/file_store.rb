@@ -55,6 +55,7 @@ module FakeS3
     end
 
     def create_bucket(bucket)
+      puts "#{@root} : #{bucket}"
       FileUtils.mkdir_p(File.join(@root,bucket))
       bucket_obj = Bucket.new(bucket,Time.now,[])
       if !@bucket_hash[bucket]
