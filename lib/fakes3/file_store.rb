@@ -79,8 +79,10 @@ module FakeS3
         metadata = YAML.load(File.open(File.join(obj_root,"metadata"),'rb'))
         real_obj.name = object_name
         real_obj.md5 = metadata[:md5]
-        real_obj.content_type = metadata.fetch(:content_type) { "application/octet-stream" }
-        real_obj.content_disposition = metadata[:content_disposition]
+        real_obj.content_type = request.query['response-content-type'] ||
+            metadata.fetch(:content_type) { "application/octet-stream" }
+        real_obj.content_disposition = request.query['response-content-disposition'] ||
+            metadata[:content_disposition]
         #real_obj.io = File.open(File.join(obj_root,"content"),'rb')
         real_obj.io = RateLimitableFile.open(File.join(obj_root,"content"),'rb')
         real_obj.size = metadata.fetch(:size) { 0 }
