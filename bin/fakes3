@@ -1,4 +1,7 @@
 #!/usr/bin/env ruby
 
+# Adds lib to default search path for load or require
+$: << './lib'
+
 require 'fakes3/cli'
 FakeS3::CLI.start
